@@ -33,5 +33,5 @@ class SioNamespace(socketio.AsyncNamespace):
         self.__poller.unregister_fd(bash.fd)
 
     async def on_message(self, sid, data) -> None:
-        logger.debug("from %s receive message %s" % (sid, data[:100]))
-        self.__bash_repo.get_bash_by_sid(sid).write_fd(data.encode() + b"\r")
+        logger.debug("from %s receive message: %s" % (sid, data[:100]))
+        self.__bash_repo.get_bash_by_sid(sid).write_fd(data.encode())

@@ -26,7 +26,7 @@ def get_sio_app(
     async def streaming():
         while True:
             message = await poller.queue.get()
-            logger.debug(f"Get message from queue for: {message.fd=}")
+            logger.debug(f"Get message from queue for %s: %s" % (message.fd, message.output[:100]))
             sid = bash_repo.get_sid_by_fd(message.fd)
             await sio.emit(
                 event="message",
