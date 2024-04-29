@@ -1,5 +1,5 @@
 build:
-	@echo "=== 🏗️ Building ==="
+	@echo "=== 🚧 Building ==="
 	docker build \
 		--tag cv-backend \
 		--target development \

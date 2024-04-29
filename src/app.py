@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from src.config import Config
+from src.infra.repos.bash_repo import BashInMemoryRepo
 from src.presentation.sio.sio_server import get_sio_app
 from src.service.bash.executor import BashExecutor
 from src.service.bash.poller import Poller
@@ -26,7 +27,7 @@ def get_app(config=Config):
     poller.start()
 
     # Create bash repo
-    bash_repo: dict[str, BashExecutor] = {}
+    bash_repo = BashInMemoryRepo()
 
     app.state.config = config
     sio_app = get_sio_app(poller=poller, bash_repo=bash_repo)

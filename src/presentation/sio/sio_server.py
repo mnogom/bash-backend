@@ -1,14 +1,14 @@
 import socketio
 from loguru import logger
 
+from src.infra.repos.bash_repo import BashInMemoryRepo
 from src.presentation.sio.sio_namespace import SioNamespace
-from src.service.bash.executor import BashExecutor
 from src.service.bash.poller import Poller
 
 
 def get_sio_app(
     poller: Poller,
-    bash_repo: dict[str, BashExecutor],
+    bash_repo: BashInMemoryRepo,
 ):
     sio = socketio.AsyncServer(async_mode="asgi")
     app = socketio.ASGIApp(sio)
@@ -24,7 +24,7 @@ def get_sio_app(
         while True:
             message = await poller.queue.get()
             logger.debug(f"Get message from queue for: {message.fd=}")
-            sid = next(sid for sid in bash_repo if bash_repo[sid].fd == message.fd)
+            sid = bash_repo.get_sid_by_fd(message.fd)
             await sio.emit(
                 event="message",
                 data=message.output.decode(),
