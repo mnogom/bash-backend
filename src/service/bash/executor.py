@@ -19,6 +19,7 @@ class BashExecutor:
         self.__poller: select.poll | None = None
         self.__max_read_bytes = 1024 * 60
         self.__poller_thread: Thread | None = None
+        self.__process = None
 
     @property
     def fd(self) -> int:
@@ -27,7 +28,7 @@ class BashExecutor:
     def create_tty(self, shell_command: str):
         self.__pid, self.__fd = pty.fork()
         if self.__pid == 0:
-            subprocess.run(shell_command)
+            self.__process = subprocess.call([shell_command])
 
     def change_tty_winsize(self, height: int, width: int):
         tty_wind_size = struct.pack("HHHH", height, width, 0, 0)
@@ -43,6 +44,7 @@ class BashExecutor:
     def close(self):
         os.close(self.__fd)
         os.kill(self.__pid, signal.SIGKILL)
+        os.waitpid(self.__pid, 0)  # omg. kill zombie process
 
 
 class BashBuilder:
