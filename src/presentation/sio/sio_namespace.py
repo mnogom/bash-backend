@@ -1,6 +1,5 @@
-import asyncio
-
 import socketio
+from loguru import logger
 
 from src.service.bash.executor import BashBuilder, BashExecutor
 from src.service.bash.poller import Poller
@@ -10,21 +9,14 @@ bash_builder = BashBuilder(BashExecutor)
 
 class SioNamespace(socketio.AsyncNamespace):
     def __init__(
-        self,
-        *args,
-        poller: Poller,
-        bash_repo: dict[str, BashExecutor],
-        **kwargs
+        self, *args, poller: Poller, bash_repo: dict[str, BashExecutor], **kwargs
     ) -> None:
         self.__bash_repo = bash_repo
         self.__poller = poller
         super().__init__(*args, **kwargs)
 
     async def on_connect(self, sid, environ) -> None:
-        # ========================================
-        # print("connect ", sid)
-        # self.__clients_repo.add_client(sid)
-        # ========================================
+        logger.debug("connect %s" % sid)
         bash = bash_builder.build(
             shell_command="/bin/bash",
             height=24,
@@ -34,21 +26,11 @@ class SioNamespace(socketio.AsyncNamespace):
         self.__bash_repo[sid] = bash
 
     async def on_disconnect(self, sid) -> None:
-        # ========================================
-        # print("disconnect ", sid)
-        # self.__clients_repo.remove_client(sid)
-        # ========================================
+        logger.debug("disconnect %s" % sid)
         bash = self.__bash_repo.pop(sid)
         bash.close()
         self.__poller.unregister_fd(bash.fd)
 
     async def on_message(self, sid, data) -> None:
-        print("message ", sid, data)
-        # ========================================
-        # queue = self.__clients_repo.get_client(sid)
-        # await queue.put(data)
-        # message = await queue.get()
-        # await self.emit("message", message, to=sid)
-        # ========================================
-
+        logger.debug("message %s %s" % (sid, data[:100]))
         self.__bash_repo[sid].write_fd(data.encode() + b"\r")

@@ -10,6 +10,7 @@ python = "^3.12"
 python-socketio = "^5.11.2"
 fastapi = "^0.110.2"
 uvicorn = "^0.29.0"
+loguru = "^0.7.2"
 
 
 [tool.poetry.group.dev.dependencies]

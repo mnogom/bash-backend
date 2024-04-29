@@ -1,15 +1,14 @@
-from time import sleep
-
 import socketio
+from loguru import logger
 
 from src.presentation.sio.sio_namespace import SioNamespace
 from src.service.bash.executor import BashExecutor
 from src.service.bash.poller import Poller
 
-bash_repo: dict[str, BashExecutor] = {}
 
 def get_sio_app(
     poller: Poller,
+    bash_repo: dict[str, BashExecutor],
 ):
     sio = socketio.AsyncServer(async_mode="asgi")
     app = socketio.ASGIApp(sio)
@@ -21,14 +20,16 @@ def get_sio_app(
         )
     )
 
-    async def streaming(*args, **kwargs):
+    async def streaming():
         while True:
-            msg = await poller.queue.get()
-            print(f"--> from queue: {msg=}")
-            fd = msg.fd
-            output = msg.output
-            sid = next(sid for sid in bash_repo if bash_repo[sid].fd == fd)
-            await sio.emit("message", output.decode(), to=sid)
+            message = await poller.queue.get()
+            logger.debug(f"Get message from queue for: {message.fd=}")
+            sid = next(sid for sid in bash_repo if bash_repo[sid].fd == message.fd)
+            await sio.emit(
+                event="message",
+                data=message.output.decode(),
+                to=sid,
+            )
 
     sio.start_background_task(streaming)
     return app
