@@ -3,11 +3,13 @@ from loguru import logger
 
 from src.infra.repos.bash_repo import BashInMemoryRepo
 from src.presentation.sio.sio_namespace import SioNamespace
+from src.service.bash.executor import BashBuilder
 from src.service.bash.poller import Poller
 
 
 def get_sio_app(
     poller: Poller,
+    bash_builder: BashBuilder,
     bash_repo: BashInMemoryRepo,
 ):
     sio = socketio.AsyncServer(
@@ -18,6 +20,7 @@ def get_sio_app(
     sio.register_namespace(
         SioNamespace(
             namespace="/",
+            bash_builder=bash_builder,
             poller=poller,
             bash_repo=bash_repo,
         )
@@ -29,7 +32,7 @@ def get_sio_app(
             logger.debug(f"Get message from queue for %s: %s" % (message.fd, message.output[:100]))
             sid = bash_repo.get_sid_by_fd(message.fd)
             await sio.emit(
-                event="message",
+                event="pty",
                 data=message.output.decode(),
                 to=sid,
             )

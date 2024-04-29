@@ -11,6 +11,8 @@ import subprocess
 import termios
 from threading import Thread
 
+from loguru import logger
+
 
 class BashExecutor:
     def __init__(self):
@@ -30,8 +32,9 @@ class BashExecutor:
         if self.__pid == 0:
             self.__process = subprocess.call([shell_command])
 
-    def change_tty_winsize(self, height: int, width: int):
-        tty_wind_size = struct.pack("HHHH", height, width, 0, 0)
+    def change_tty_winsize(self, rows: int, cols: int):
+        logger.debug("Change tty size to: %s x %s" % (rows, cols))
+        tty_wind_size = struct.pack("HHHH", rows, cols, 0, 0)
         fcntl.ioctl(self.__fd, termios.TIOCSWINSZ, tty_wind_size)
 
     def write_fd(self, command: bytes):
@@ -48,11 +51,12 @@ class BashExecutor:
 
 
 class BashBuilder:
-    def __init__(self, klass: type[BashExecutor]):
+    def __init__(self, klass: type[BashExecutor], shell_command: str):
         self.__klass = klass
+        self.__shell_command = shell_command
 
-    def build(self, shell_command: str, height: int = 24, width: int = 80):
+    def build(self, rows: int, cols: int) -> BashExecutor:
         instance = self.__klass()
-        instance.create_tty(shell_command)
-        instance.change_tty_winsize(height=height, width=width)
+        instance.create_tty(self.__shell_command)
+        instance.change_tty_winsize(rows=rows, cols=cols)
         return instance

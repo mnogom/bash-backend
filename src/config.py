@@ -1,9 +1,9 @@
-from pydantic import BaseConfig
+from pydantic_settings import BaseSettings
 
 
-class Config(BaseConfig):
-    APP_NAME: str = "Freidlin BASH"
-    PORT: int = 8080
-    DEBUG: bool = True
-
-    SHELL: str = "/bin/bash"
+class Config(BaseSettings):
+    APP_NAME: str
+    HOST: str
+    PORT: int
+    DEBUG: bool
+    SHELL: str
