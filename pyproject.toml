@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "cv-backend"
+version = "0.1.0"
+description = ""
+authors = ["Konstantin Freidlin <freidlinks@ya.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+python-socketio = "^5.11.2"
+fastapi = "^0.110.2"
+uvicorn = "^0.29.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.2"
+flake8 = "^7.0.0"
+mypy = "^1.10.0"
+isort = "^5.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
