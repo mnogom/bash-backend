@@ -23,7 +23,7 @@ def get_server(app: FastAPI, config: Config):
 
 
 async def run_server():
-    config = Config()
+    config = Config()  # type: ignore[call-arg]
     app = get_app(config=config)
     server = get_server(app=app, config=config)
     await server.serve()

@@ -1,3 +1,5 @@
+RUN = docker run -p 8080:8080 --rm -it --env-file ./.env --name cv-backend cv-backend
+
 build:
 	@echo "=== 🚧 Building ==="
 	docker build \
@@ -8,7 +10,15 @@ build:
 
 run: build
 	@echo "=== 🏃 Running ==="
-	docker run -p 8080:8080 --rm -it --env-file ./.env --name cv-backend cv-backend
+	${RUN}
+
+mypy: build
+	@echo "=== 🪨 Mypy ==="
+	$(RUN) mypy --ignore-missing-imports --check-untyped-defs src main.py
+
+lint: build
+	@echo "=== 💅 Linting ==="
+	$(RUN) poetry run flake8 src main.py
 
 format:
 	@echo "=== 🧹 Formatting ==="

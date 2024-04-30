@@ -23,7 +23,7 @@ class Poller:
     def unregister_fd(self, fd: int) -> None:
         self.__poller.unregister(fd)
 
-    def __run_poller(self):
+    def __run_poller(self) -> None:
         while True:
             events = self.__poller.poll(self.__timeout_ms)
             for fd, event in events:
@@ -34,5 +34,5 @@ class Poller:
                     )
                     self.queue.put_nowait(output)
 
-    def start(self):
+    def start(self) -> None:
         Thread(target=self.__run_poller, daemon=True).start()

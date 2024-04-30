@@ -1,6 +1,7 @@
+from urllib.parse import parse_qs
+
 import socketio
 from loguru import logger
-from urllib.parse import parse_qs
 
 from src.infra.repos.bash_repo import BashInMemoryRepo
 from src.service.bash.executor import BashBuilder
@@ -21,7 +22,7 @@ class SioNamespace(socketio.AsyncNamespace):
         self.__bash_builder = bash_builder
         super().__init__(*args, **kwargs)
 
-    async def on_connect(self, sid, environ) -> None:
+    async def on_connect(self, sid: str, environ: dict) -> None:
         logger.debug("connect %s" % sid)
         query = environ["QUERY_STRING"]
         params = parse_qs(query)
@@ -32,16 +33,20 @@ class SioNamespace(socketio.AsyncNamespace):
         self.__poller.register_fd(bash.fd)
         self.__bash_repo.add(sid, bash)
 
-    async def on_disconnect(self, sid) -> None:
+    async def on_disconnect(self, sid: str) -> None:
         logger.debug("disconnect %s" % sid)
         bash = self.__bash_repo.pop(sid)
         bash.close()
         self.__poller.unregister_fd(bash.fd)
 
-    async def on_pty(self, sid, data) -> None:
+    async def on_pty(self, sid: str, data: str) -> None:
         logger.debug("from %s receive message: %s" % (sid, data[:100]))
         self.__bash_repo.get_bash_by_sid(sid).write_fd(data.encode())
 
-    async def on_resize(self, sid, data) -> None:
-        logger.debug("from %s receive resize message: %s" % (sid, data))
-        self.__bash_repo.get_bash_by_sid(sid).change_tty_winsize(rows=int(data["rows"]), cols=int(data["cols"]))
+    async def on_resize(self, sid: str, data: dict[str, str]) -> None:
+        logger.debug(
+            "from %s receive resize message: %s" % (sid, data)
+        )
+        self.__bash_repo.get_bash_by_sid(sid).change_tty_winsize(
+            rows=int(data["rows"]), cols=int(data["cols"])
+        )

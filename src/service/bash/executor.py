@@ -9,49 +9,53 @@ import signal
 import struct
 import subprocess
 import termios
-from threading import Thread
 
 from loguru import logger
 
 
 class BashExecutor:
-    def __init__(self):
+    def __init__(self) -> None:
         self.__pid: int | None = None
         self.__fd: int | None = None
-        self.__poller: select.poll | None = None
         self.__max_read_bytes = 1024 * 60
-        self.__poller_thread: Thread | None = None
-        self.__process = None
 
     @property
     def fd(self) -> int:
+        if self.__fd is None:
+            raise Exception("fd is None")
         return self.__fd
 
-    def create_tty(self, shell_command: str):
-        self.__pid, self.__fd = pty.fork()
-        if self.__pid == 0:
-            self.__process = subprocess.call([shell_command])
+    @property
+    def pid(self) -> int:
+        if self.__pid is None:
+            raise Exception("pid is None")
+        return self.__pid
 
-    def change_tty_winsize(self, rows: int, cols: int):
+    def create_tty(self, shell_command: str) -> None:
+        self.__pid, self.__fd = pty.fork()
+        if self.pid == 0:
+            subprocess.call([shell_command])
+
+    def change_tty_winsize(self, rows: int, cols: int) -> None:
         logger.debug("Change tty size to: %s x %s" % (rows, cols))
         tty_wind_size = struct.pack("HHHH", rows, cols, 0, 0)
-        fcntl.ioctl(self.__fd, termios.TIOCSWINSZ, tty_wind_size)
+        fcntl.ioctl(self.fd, termios.TIOCSWINSZ, tty_wind_size)
 
-    def write_fd(self, command: bytes):
-        os.write(self.__fd, command)
+    def write_fd(self, command: bytes) -> None:
+        os.write(self.fd, command)
 
-    def read_fd(self):
-        select.select([self.__fd], [], [])
-        return os.read(self.__fd, self.__max_read_bytes)
+    def read_fd(self) -> bytes:
+        select.select([self.fd], [], [])
+        return os.read(self.fd, self.__max_read_bytes)
 
-    def close(self):
-        os.close(self.__fd)
-        os.kill(self.__pid, signal.SIGKILL)
-        os.waitpid(self.__pid, 0)  # omg. kill zombie process
+    def close(self) -> None:
+        os.close(self.fd)
+        os.kill(self.pid, signal.SIGKILL)
+        os.waitpid(self.pid, 0)  # omg. kill zombie process
 
 
 class BashBuilder:
-    def __init__(self, klass: type[BashExecutor], shell_command: str):
+    def __init__(self, klass: type[BashExecutor], shell_command: str) -> None:
         self.__klass = klass
         self.__shell_command = shell_command
 

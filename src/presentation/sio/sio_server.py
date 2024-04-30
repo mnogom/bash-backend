@@ -11,7 +11,7 @@ def get_sio_app(
     poller: Poller,
     bash_builder: BashBuilder,
     bash_repo: BashInMemoryRepo,
-):
+) -> socketio.ASGIApp:
     sio = socketio.AsyncServer(
         async_mode="asgi",
         cors_allowed_origins="*",
@@ -26,10 +26,13 @@ def get_sio_app(
         )
     )
 
-    async def streaming():
+    async def streaming() -> None:
         while True:
             message = await poller.queue.get()
-            logger.debug(f"Get message from queue for %s: %s" % (message.fd, message.output[:100]))
+            logger.debug(
+                "Get message from queue for %s: %r"
+                % (message.fd, message.output[:100])
+            )
             sid = bash_repo.get_sid_by_fd(message.fd)
             await sio.emit(
                 event="pty",
