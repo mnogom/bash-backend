@@ -1,4 +1,5 @@
 RUN = docker run -p 8080:8080 --rm -it --env-file ./.env --name cv-backend cv-backend
+RUN_WITH_VOLUMES = docker run -p 8080:8080 --rm -it --env-file ./.env --name cv-backend --volume ./src:/app/src --volume ./main.py:/app/main.py cv-backend
 
 build:
 	@echo "=== 🚧 Building ==="
@@ -20,7 +21,11 @@ lint: build
 	@echo "=== 💅 Linting ==="
 	$(RUN) poetry run flake8 src main.py
 
-format:
+shell: build
+	@echo "=== 🐚 Shell ==="
+	$(RUN) bash
+
+format: build
 	@echo "=== 🧹 Formatting ==="
-	poetry run isort .
-	poetry run black .
+	$(RUN_WITH_VOLUMES) poetry run black . --line-length 79
+	$(RUN_WITH_VOLUMES) poetry run isort .

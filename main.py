@@ -2,11 +2,11 @@ import asyncio
 import os
 from logging import getLogger
 
-import uvicorn
-from fastapi import FastAPI
-
 from src.app import get_app
 from src.config import Config
+
+import uvicorn
+from fastapi import FastAPI
 
 logger = getLogger(__name__)
 

@@ -44,9 +44,7 @@ class SioNamespace(socketio.AsyncNamespace):
         self.__bash_repo.get_bash_by_sid(sid).write_fd(data.encode())
 
     async def on_resize(self, sid: str, data: dict[str, str]) -> None:
-        logger.debug(
-            "from %s receive resize message: %s" % (sid, data)
-        )
+        logger.debug("from %s receive resize message: %s" % (sid, data))
         self.__bash_repo.get_bash_by_sid(sid).change_tty_winsize(
             rows=int(data["rows"]), cols=int(data["cols"])
         )

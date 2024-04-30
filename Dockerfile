@@ -18,7 +18,8 @@ RUN poetry config virtualenvs.create false && \
     poetry install --no-interaction --no-cache && \
     rm -rf ~/.cache
 
-COPY . .
+COPY ./src ./src
+COPY ./main.py ./
 
 ENTRYPOINT ["tini", "--" ]
 CMD ["python", "main.py"]
