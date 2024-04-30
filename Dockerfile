@@ -4,7 +4,7 @@ WORKDIR /app
 ARG POETRY_HOME=/etc/poetry
 ENV PATH="${PATH}:${POETRY_HOME}/bin"
 
-RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing tini curl procps && \
+RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing tini curl procps nano vim && \
     curl -sSL https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} python - --version 1.8.2 && \
 #    apt-get remove -y curl && \
     rm -rf /var/lib/apt/lists/*
