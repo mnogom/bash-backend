@@ -1,8 +1,11 @@
+HOSTNAME = freidlin
+
 RUN = docker run \
 			-p 8080:8080 \
 			--rm -it \
 			--env-file ./.env \
 			--name cv-backend \
+			--hostname ${HOSTNAME} \
 			cv-backend
 
 RUN_WITH_VOLUMES = docker run \
@@ -31,11 +34,11 @@ build_prod:
 		.
 
 run: build_dev
-	@echo "=== 🏃 Running ==="
+	@echo "=== 🏃 Running dev ==="
 	${RUN}
 
 run-prod: build_prod
-	@echo "=== 🏃 Running ==="
+	@echo "=== 👾 Running prod ==="
 	${RUN}
 
 mypy: build_dev
