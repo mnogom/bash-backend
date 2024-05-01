@@ -25,7 +25,7 @@ build-prod:
 		--progress=plain \
 		.
 
-run: build-dev
+run-dev: build-dev
 	@echo "=== 🏃 Running dev ==="
 	${RUN}
 
