@@ -31,10 +31,10 @@ class BashExecutor:
             raise Exception("pid is None")
         return self.__pid
 
-    def create_tty(self, shell_command: str) -> None:
+    def create_tty(self, command: list[str]) -> None:
         self.__pid, self.__fd = pty.fork()
         if self.pid == 0:
-            subprocess.call([shell_command])
+            subprocess.call(command, shell=False)
 
     def change_tty_winsize(self, rows: int, cols: int) -> None:
         logger.debug("Change tty size to: %s x %s" % (rows, cols))
@@ -57,7 +57,8 @@ class BashExecutor:
 class BashBuilder:
     def __init__(self, klass: type[BashExecutor], shell_command: str) -> None:
         self.__klass = klass
-        self.__shell_command = shell_command
+        self.__shell_command = shell_command.split(" ")
+        logger.debug("Shell command: %s" % self.__shell_command)
 
     def build(self, rows: int, cols: int) -> BashExecutor:
         instance = self.__klass()

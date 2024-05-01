@@ -31,7 +31,7 @@ def get_app(config=Config) -> FastAPI:
     # Create bash builder
     bash_builder = BashBuilder(
         klass=BashExecutor,
-        shell_command=config.SHELL,
+        shell_command=config.SHELL_COMMAND,
     )
 
     # Get soket.io app

@@ -6,4 +6,4 @@ class Config(BaseSettings):
     HOST: str
     PORT: int
     DEBUG: bool
-    SHELL: str
+    SHELL_COMMAND: str
