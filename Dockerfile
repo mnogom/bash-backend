@@ -40,11 +40,15 @@ COPY ./main.py ./
 
 # Setup users
 RUN groupadd --gid $USER_GID $USER_NAME && \
-    useradd --uid $USER_UID --gid $USER_GID $USER_NAME && \
-    chmod -R 555 /app $USER_HOME
+    useradd --uid $USER_UID --gid $USER_GID $USER_NAME
 
 RUN groupadd --gid $GUEST_GID $GUEST_NAME && \
     useradd --uid $GUEST_UID --gid $GUEST_GID $GUEST_NAME
+
+# Make konstantin use bash for guest without password
+# src: https://askubuntu.com/a/159009
+# src: https://ru.wikipedia.org/wiki/Chown
+RUN echo 'konstantin ALL = (guest) NOPASSWD: /bin/bash' >> /etc/sudoers
 
 FROM base AS development
 
@@ -59,15 +63,17 @@ CMD ["python", "/app/main.py"]
 
 FROM base as production
 
-# Make konstantin use bash for guest without password
-RUN echo konstantin ALL = (guest) NOPASSWD: /bin/bash >> /etc/sudoers
+# Setup users access to bin
+# src: https://ru.hexlet.io/courses/cli-basics/lessons/permissions/theory_unit
+
+# Access to app
+RUN chown -R :konstantin /app && chmod -R 750 /app && \
+    # Disable access to python
+    chown :konstantin -R /usr/local && chmod -R 750 /usr/local
 
 RUN poetry config virtualenvs.create false && \
     poetry install --no-interaction --no-cache --without dev && \
     rm -rf ~/.cache
-
-COPY ./src ./src
-COPY ./main.py ./
 
 # Cleanup, uninstall `curl`, `gpg` and charm source
 RUN apt-get remove -y curl gpg && \
@@ -75,7 +81,8 @@ RUN apt-get remove -y curl gpg && \
     rm /etc/apt/keyrings/charm.gpg && \
     rm /etc/apt/sources.list.d/charm.list && \
     rm -rf /root/.local/share/charm && \
-    rm poetry.lock pyproject.toml
+    rm poetry.lock pyproject.toml && \
+    pip uninstall poetry
 
 WORKDIR /home/$USER_NAME
 
@@ -83,5 +90,3 @@ USER $USER_NAME
 
 ENTRYPOINT ["tini", "--" ]
 CMD ["python", "/app/main.py"]
-
-# https://ru.hexlet.io/courses/cli-basics/lessons/permissions/theory_unit
