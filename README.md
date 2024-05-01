@@ -1,4 +1,4 @@
-# Freidlin CV
+# Backend for bash
 
 ### Run
 ```bash
