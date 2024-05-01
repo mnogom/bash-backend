@@ -7,12 +7,12 @@ RUN = docker run \
 			--name bash-backend \
 			--hostname ${HOSTNAME} \
 			--dns 0.0.0.0 \
-			bash-backend
+			mnogom/bash-backend
 
 build-dev:
 	@echo "=== 🚧 Building dev ==="
 	docker build \
-		--tag bash-backend \
+		--tag mnogom/bash-backend \
 		--target development \
 		--progress=plain \
 		.
@@ -20,7 +20,7 @@ build-dev:
 build-prod:
 	@echo "=== 🙈 Building prod ==="
 	docker build \
-		--tag bash-backend \
+		--tag mnogom/bash-backend \
 		--target production \
 		--progress=plain \
 		.
