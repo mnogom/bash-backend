@@ -4,15 +4,15 @@ RUN = docker run \
 			-p 8080:8080 \
 			--rm -it \
 			--env-file ./.env \
-			--name cv-backend \
+			--name bash-backend \
 			--hostname ${HOSTNAME} \
 			--dns 0.0.0.0 \
-			cv-backend
+			bash-backend
 
 build-dev:
 	@echo "=== 🚧 Building dev ==="
 	docker build \
-		--tag cv-backend \
+		--tag bash-backend \
 		--target development \
 		--progress=plain \
 		.
@@ -20,7 +20,7 @@ build-dev:
 build-prod:
 	@echo "=== 🙈 Building prod ==="
 	docker build \
-		--tag cv-backend \
+		--tag bash-backend \
 		--target production \
 		--progress=plain \
 		.
