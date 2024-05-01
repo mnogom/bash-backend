@@ -38,7 +38,7 @@ def get_sio_app(
                 data = message.output.decode()
                 await sio.emit(
                     event="pty",
-                    data=message.output.decode(),
+                    data=data,
                     to=sid,
                 )
             # TODO: add error handling
