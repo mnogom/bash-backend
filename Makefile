@@ -41,6 +41,10 @@ mypy: build-dev
 	@echo "=== 🪨 Mypy ==="
 	$(RUN) mypy --ignore-missing-imports --check-untyped-defs /app
 
+install:
+	@echo "=== 📦 Installing ==="
+	poetry install --no-root
+
 format:
 	@echo "=== 🧹 Formatting ==="
 	poetry run black --line-length 79 .
