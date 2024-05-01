@@ -1,31 +1,56 @@
-RUN = docker run -p 8080:8080 --rm -it --env-file ./.env --name cv-backend cv-backend
-RUN_WITH_VOLUMES = docker run -p 8080:8080 --rm -it --env-file ./.env --name cv-backend --volume ./src:/app/src --volume ./main.py:/app/main.py cv-backend
+RUN = docker run \
+			-p 8080:8080 \
+			--rm -it \
+			--env-file ./.env \
+			--name cv-backend \
+			cv-backend
 
-build:
-	@echo "=== 🚧 Building ==="
+RUN_WITH_VOLUMES = docker run \
+			-p 8080:8080 \
+			--rm -it \
+			--env-file ./.env \
+			--name cv-backend \
+			--volume ./src:/app/src \
+			--volume ./main.py:/app/main.py \
+			cv-backend
+
+build_dev:
+	@echo "=== 🚧 Building dev ==="
 	docker build \
 		--tag cv-backend \
 		--target development \
 		--progress=plain \
 		.
 
-run: build
+build_prod:
+	@echo "=== 🙈 Building prod ==="
+	docker build \
+		--tag cv-backend \
+		--target production \
+		--progress=plain \
+		.
+
+run: build_dev
 	@echo "=== 🏃 Running ==="
 	${RUN}
 
-mypy: build
+run-prod: build_prod
+	@echo "=== 🏃 Running ==="
+	${RUN}
+
+mypy: build_dev
 	@echo "=== 🪨 Mypy ==="
 	$(RUN) mypy --ignore-missing-imports --check-untyped-defs src main.py
 
-lint: build
+lint: build_dev
 	@echo "=== 💅 Linting ==="
 	$(RUN) poetry run flake8 src main.py
 
-shell: build
-	@echo "=== 🐚 Shell ==="
+bash: build_dev
+	@echo "=== 🐚 Bash ==="
 	$(RUN) bash
 
-format: build
+format: build_dev
 	@echo "=== 🧹 Formatting ==="
 	$(RUN_WITH_VOLUMES) poetry run black . --line-length 79
 	$(RUN_WITH_VOLUMES) poetry run isort .
