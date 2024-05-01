@@ -11,7 +11,12 @@ from src.service.bash.poller import Poller
 
 
 def get_app(config=Config) -> FastAPI:
-    app = FastAPI(title=config.APP_NAME, debug=config.DEBUG)
+    app = FastAPI(
+        title=config.APP_NAME,
+        debug=config.DEBUG,
+        docs_url=None,
+        redoc_url=None
+    )
     # TODO: check if need it
     app.add_middleware(
         CORSMiddleware,
