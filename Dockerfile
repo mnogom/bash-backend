@@ -1,8 +1,6 @@
 FROM python:3.12-slim AS base
 
 ARG POETRY_HOME=/etc/poetry
-ARG GITHUB_CV_URL=https://raw.githubusercontent.com/mnogom/mnogom/main/README.md
-ARG GITHUB_CV_FILE=00-projects.md
 
 ARG USER_NAME=konstantin
 ARG USER_UID=1000
@@ -30,9 +28,14 @@ RUN mkdir -p /etc/apt/keyrings && \
 RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing tini sudo procps nano vim tree glow bat && \
     curl -sSL https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} python - --version 1.8.2
 
-# Setup home dir
+# Setup home dir (TODO: fix pipeline)
 RUN mkdir -p $USER_HOME && \
-    curl $GITHUB_CV_URL > $USER_HOME/$GITHUB_CV_FILE
+    curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/00-HOWTO.md > $USER_HOME/00-HOWTO.md && \
+    curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/01-MOTIVATION.md > $USER_HOME/01-MOTIVATION.md && \
+    curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/02-CV.md > $USER_HOME/02-CV.md && \
+    curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/03-GITHUB-PROJECTS.md > $USER_HOME/03-GITHUB-PROJECTS.md && \
+    mkdir $USER_HOME/offtopic && \
+    curl https://github.com/mnogom/bash-deploy/blob/main/bash-volume/offtopic/00-START.md > $USER_HOME/00-START.md
 
 # Setup app
 COPY poetry.lock pyproject.toml ./
