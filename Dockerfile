@@ -35,7 +35,7 @@ RUN mkdir -p $USER_HOME && \
     curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/02-CV.md > $USER_HOME/02-CV.md && \
     curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/03-GITHUB-PROJECTS.md > $USER_HOME/03-GITHUB-PROJECTS.md && \
     mkdir $USER_HOME/offtopic && \
-    curl https://github.com/mnogom/bash-deploy/blob/main/bash-volume/offtopic/00-START.md > $USER_HOME/00-START.md
+    curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/offtopic/00-START.md > $USER_HOME/offtopic/00-START.md
 
 # Setup app
 COPY poetry.lock pyproject.toml ./
