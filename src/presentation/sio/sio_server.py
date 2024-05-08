@@ -30,8 +30,7 @@ def get_sio_app(
         while True:
             message = await poller.queue.get()
             logger.debug(
-                "Get message from queue for %s: %r"
-                % (message.fd, message.output[:100])
+                "Get message from queue for %s: %r" % (message.fd, message.output[:100])
             )
             sid = bash_repo.get_sid_by_fd(message.fd)
             try:

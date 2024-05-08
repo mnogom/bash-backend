@@ -6,6 +6,8 @@ ARG USER_NAME=konstantin
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 ARG USER_HOME=/home/${USER_NAME}
+ARG USER_PYTHON_ENV=$USER_HOME/.venv
+ARG USER_PYTHON=$USER_PYTHON_ENV/bin/python
 
 ARG GUEST_NAME=guest
 ARG GUEST_UID=2000
@@ -25,8 +27,31 @@ RUN mkdir -p /etc/apt/keyrings && \
     echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | tee /etc/apt/sources.list.d/charm.list
 
 # Install user deps
-RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing tini sudo procps nano vim tree glow bat && \
+RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing \
+            tini \
+    sudo \
+    procps \
+    nano \
+    vim \
+    tree \
+    glow \
+    bat \
+    git \
+    zlib1g-dev \
+    libjpeg-dev  \
+    gcc && \
     curl -sSL https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} python - --version 1.8.2
+
+# Install my projects
+RUN python -m venv $USER_PYTHON_ENV && \
+    $USER_PYTHON -m pip install --upgrade git+https://github.com/mnogom/python-project-lvl1.git && \
+    $USER_PYTHON -m pip install --upgrade git+https://github.com/mnogom/python-project-lvl2.git && \
+    $USER_PYTHON -m pip install --upgrade git+https://github.com/mnogom/pathfinder.git && \
+    $USER_PYTHON -m pip install --upgrade git+https://github.com/mnogom/what-about-the-size.git && \
+    $USER_PYTHON -m pip install --upgrade git+https://github.com/mnogom/FizzBuzz.git && \
+    $USER_PYTHON -m pip install --upgrade git+https://github.com/mnogom/sea-battle.git
+
+
 
 # Setup home dir (TODO: fix pipeline)
 RUN mkdir -p $USER_HOME && \
@@ -80,7 +105,7 @@ RUN poetry config virtualenvs.create false && \
     rm -rf ~/.cache
 
 # Cleanup, uninstall `curl`, `gpg` and charm source
-RUN apt-get remove -y curl gpg && \
+RUN apt-get remove -y curl gpg git && \
     rm -rf /var/lib/apt/lists/* && \
     rm /etc/apt/keyrings/charm.gpg && \
     rm /etc/apt/sources.list.d/charm.list && \

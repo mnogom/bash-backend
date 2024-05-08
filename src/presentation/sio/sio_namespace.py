@@ -15,7 +15,7 @@ class SioNamespace(socketio.AsyncNamespace):
         bash_builder: BashBuilder,
         poller: Poller,
         bash_repo: BashInMemoryRepo,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.__bash_repo = bash_repo
         self.__poller = poller
