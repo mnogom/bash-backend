@@ -98,7 +98,7 @@ WORKDIR /home/$USER_NAME
 
 USER $USER_NAME
 
-RUN echo "alias bash='bash --rcfile /home/konstantin/.bashrc'" >> ~/.bashrc && \
+RUN echo "alias bash=''" >> ~/.bashrc && \
     echo "alias while=''" >> ~/.bashrc && \
     echo "alias do=''" >> ~/.bashrc && \
     echo "alias for=''" >> ~/.bashrc && \
@@ -109,6 +109,7 @@ RUN echo "alias bash='bash --rcfile /home/konstantin/.bashrc'" >> ~/.bashrc && \
     echo "alias else=''" >> ~/.bashrc && \
     echo "alias fi=''" >> ~/.bashrc && \
     echo "alias eval=''" >> ~/.bashrc && \
+    echo "alias unalias=''" >> ~/.bashrc && \
     echo "alias alias=''" >> ~/.bashrc
 
 ENTRYPOINT ["tini", "--" ]
