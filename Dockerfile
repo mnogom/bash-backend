@@ -28,9 +28,15 @@ RUN mkdir -p /etc/apt/keyrings && \
 RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing tini sudo procps nano vim tree glow bat && \
     curl -sSL https://install.python-poetry.org | POETRY_HOME=${POETRY_HOME} python - --version 1.8.2
 
+# Setup users
+RUN groupadd --gid $USER_GID $USER_NAME && \
+    useradd --uid $USER_UID --gid $USER_GID --create-home $USER_NAME
+
+RUN groupadd --gid $GUEST_GID $GUEST_NAME && \
+    useradd --uid $GUEST_UID --gid $GUEST_GID $GUEST_NAME
+
 # Setup home dir (TODO: fix pipeline)
-RUN mkdir -p $USER_HOME && \
-    curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/00-HOWTO.md > $USER_HOME/00-HOWTO.md && \
+RUN curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/00-HOWTO.md > $USER_HOME/00-HOWTO.md && \
     curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/01-MOTIVATION.md > $USER_HOME/01-MOTIVATION.md && \
     curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/02-CV.md > $USER_HOME/02-CV.md && \
     curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/03-GITHUB-PROJECTS.md > $USER_HOME/03-GITHUB-PROJECTS.md && \
@@ -39,15 +45,6 @@ RUN mkdir -p $USER_HOME && \
 
 # Setup app
 COPY poetry.lock pyproject.toml ./
-COPY ./src ./src
-COPY ./main.py ./
-
-# Setup users
-RUN groupadd --gid $USER_GID $USER_NAME && \
-    useradd --uid $USER_UID --gid $USER_GID $USER_NAME
-
-RUN groupadd --gid $GUEST_GID $GUEST_NAME && \
-    useradd --uid $GUEST_UID --gid $GUEST_GID $GUEST_NAME
 
 # Make konstantin use bash for guest without password
 # src: https://askubuntu.com/a/159009
@@ -59,6 +56,9 @@ FROM base AS development
 RUN poetry config virtualenvs.create false && \
     poetry install --no-interaction --no-cache && \
     rm -rf ~/.cache
+
+COPY ./src ./src
+COPY ./main.py ./
 
 WORKDIR /home/$USER_NAME
 
@@ -73,7 +73,9 @@ FROM base as production
 # Access to app
 RUN chown -R :konstantin /app && chmod -R 750 /app && \
     # Disable access to python
-    chown :konstantin -R /usr/local && chmod -R 750 /usr/local
+    chown :konstantin -R /usr/local && chmod -R 750 /usr/local && \
+    # Disable access to sh
+    chmod 750 /usr/bin/sh
 
 RUN poetry config virtualenvs.create false && \
     poetry install --no-interaction --no-cache --without dev && \
@@ -88,9 +90,26 @@ RUN apt-get remove -y curl gpg && \
     rm poetry.lock pyproject.toml && \
     pip uninstall poetry
 
+
+COPY ./src ./src
+COPY ./main.py ./
+
 WORKDIR /home/$USER_NAME
 
 USER $USER_NAME
+
+RUN echo "alias bash='bash --rcfile /home/konstantin/.bashrc'" >> ~/.bashrc && \
+    echo "alias while=''" >> ~/.bashrc && \
+    echo "alias do=''" >> ~/.bashrc && \
+    echo "alias for=''" >> ~/.bashrc && \
+    echo "alias in=''" >> ~/.bashrc && \
+    echo "alias done=''" >> ~/.bashrc && \
+    echo "alias if=''" >> ~/.bashrc && \
+    echo "alias then=''" >> ~/.bashrc && \
+    echo "alias else=''" >> ~/.bashrc && \
+    echo "alias fi=''" >> ~/.bashrc && \
+    echo "alias eval=''" >> ~/.bashrc && \
+    echo "alias alias=''" >> ~/.bashrc
 
 ENTRYPOINT ["tini", "--" ]
 CMD ["python", "/app/main.py"]
