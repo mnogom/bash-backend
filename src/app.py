@@ -10,7 +10,7 @@ from src.service.bash.executor import BashBuilder, BashExecutor
 from src.service.bash.poller import Poller
 
 
-def get_app(config=Config) -> FastAPI:
+def get_app(config: Config) -> FastAPI:
     app = FastAPI(
         title=config.APP_NAME,
         debug=config.DEBUG,
