@@ -21,14 +21,10 @@ class BashExecutor:
 
     @property
     def fd(self) -> int:
-        if self.__fd is None:
-            raise Exception("fd is None")
         return self.__fd
 
     @property
     def pid(self) -> int:
-        if self.__pid is None:
-            raise Exception("pid is None")
         return self.__pid
 
     def create_tty(self, command: list[str]) -> None:
