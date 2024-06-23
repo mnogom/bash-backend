@@ -7,3 +7,4 @@ class Config(BaseSettings):
     PORT: int
     DEBUG: bool
     SHELL_COMMAND: str
+    DISABLE_CORS: bool = True

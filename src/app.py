@@ -19,13 +19,14 @@ def get_app(config: Config) -> FastAPI:
         redoc_url=None
     )
     # CORS policy
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    if not config.DISABLE_CORS:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
     # Register routes
     app.include_router(
         router=service_router,
