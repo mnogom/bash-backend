@@ -10,3 +10,7 @@ make run
 * fix for ^D on baskend
 * improve quality of exceptions
 * add tests
+
+# TODO:
+* for building create 2 tags: `...-dev` and `...-prod`
+* проверь. я там подвигал copy-штуки в докере, чтобы пересборка была правильней
