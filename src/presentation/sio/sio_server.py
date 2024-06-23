@@ -34,12 +34,16 @@ def get_sio_app(
                 % (message.fd, message.output[:100])
             )
             sid = bash_repo.get_sid_by_fd(message.fd)
-            data = message.output.decode()
-            await sio.emit(
-                event="pty",
-                data=data,
-                to=sid,
-            )
+            try:
+                data = message.output.decode()
+                await sio.emit(
+                    event="pty",
+                    data=data,
+                    to=sid,
+                )
+            # TODO: add error handling
+            except:
+                pass
 
     sio.start_background_task(streaming)
     return app
