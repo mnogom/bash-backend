@@ -12,5 +12,6 @@ make run
 * add tests
 
 # TODO:
-* for building create 2 tags: `...-dev` and `...-prod`
-* проверь. я там подвигал copy-штуки в докере, чтобы пересборка была правильней
+* Think about custom PS1
+  * PS1='\[\e[38;5;160m\]\h@\u:\[\e[38;5;33m\]\w\[\e[0m\] \[\e[38;5;160m\]->\[\e[0m\] '
+  * PS1='\[\e[38;5;160m\]\h@\u:\[\e[38;5;33m\]\w\[\e[38;5;160m\]\$\[\e[0m\] '

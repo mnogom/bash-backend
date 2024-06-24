@@ -50,6 +50,7 @@ COPY poetry.lock pyproject.toml ./
 # src: https://askubuntu.com/a/159009
 # src: https://ru.wikipedia.org/wiki/Chown
 RUN echo 'konstantin ALL = (guest) NOPASSWD: /bin/bash' >> /etc/sudoers
+RUN sed -i -e "s/#force_color_prompt=yes/force_color_prompt=yes/g" $USER_HOME/.bashrc
 
 FROM base AS development
 
