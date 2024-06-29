@@ -3,6 +3,8 @@ import os
 import select
 from threading import Thread
 
+from loguru import logger
+
 from src.dto import PollerMessage
 
 
@@ -18,9 +20,11 @@ class Poller:
         return self.__queue
 
     def register_fd(self, fd: int) -> None:
+        logger.info("Register fd: %s" % fd)
         self.__poller.register(fd, select.POLLIN)
 
     def unregister_fd(self, fd: int) -> None:
+        logger.info("Unregister fd: %s" % fd)
         self.__poller.unregister(fd)
 
     def __run_poller(self) -> None:

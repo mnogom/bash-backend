@@ -1,13 +1,12 @@
 import asyncio
 
 from fastapi import FastAPI
-from loguru import logger
 from starlette.middleware.cors import CORSMiddleware
 
 from src.config import Config
 from src.infra.repos.bash_repo import BashInMemoryRepo
-from src.presentation.sio.sio_server import get_sio_app
 from src.presentation.api.router import service_router
+from src.presentation.sio.sio_server import get_sio_app
 from src.service.bash.executor import BashBuilder, BashExecutor
 from src.service.bash.poller import Poller
 
@@ -17,7 +16,7 @@ def get_app(config: Config) -> FastAPI:
         title=config.APP_NAME,
         debug=config.DEBUG,
         docs_url=None,
-        redoc_url=None
+        redoc_url=None,
     )
     # CORS policy
     if not config.DISABLE_CORS:
@@ -30,9 +29,7 @@ def get_app(config: Config) -> FastAPI:
         )
     # Register routes
     app.include_router(
-        router=service_router,
-        prefix="/service",
-        tags=["internal"]
+        router=service_router, prefix="/service", tags=["internal"]
     )
     # Run poller
     poller = Poller(asyncio.Queue())

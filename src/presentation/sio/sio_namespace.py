@@ -23,7 +23,7 @@ class SioNamespace(socketio.AsyncNamespace):
         super().__init__(*args, **kwargs)
 
     async def on_connect(self, sid: str, environ: dict) -> None:
-        logger.debug("connect %s" % sid)
+        logger.debug("connection %s" % sid)
         query = environ["QUERY_STRING"]
         params = parse_qs(query)
         bash = self.__bash_builder.build(
@@ -40,7 +40,6 @@ class SioNamespace(socketio.AsyncNamespace):
         self.__poller.unregister_fd(bash.fd)
 
     async def on_pty(self, sid: str, data: str) -> None:
-        logger.debug("from %s receive message: %s" % (sid, data[:100]))
         self.__bash_repo.get_bash_by_sid(sid).write_fd(data.encode())
 
     async def on_resize(self, sid: str, data: dict[str, str]) -> None:

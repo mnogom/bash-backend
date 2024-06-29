@@ -31,9 +31,13 @@ class BashExecutor:
         self.__pid, self.__fd = pty.fork()
         if self.pid == 0:
             subprocess.call(command, shell=False)
+        logger.info("Create tty pid/fd: %s/%s" % (self.pid, self.fd))
 
     def change_tty_winsize(self, rows: int, cols: int) -> None:
-        logger.debug("Change tty size to: %s x %s" % (rows, cols))
+        logger.info(
+            "Change tty size to: %s x %s for pid/fd: %s/%s"
+            % (rows, cols, self.pid, self.fd)
+        )
         tty_wind_size = struct.pack("HHHH", rows, cols, 0, 0)
         fcntl.ioctl(self.fd, termios.TIOCSWINSZ, tty_wind_size)
 
@@ -45,6 +49,7 @@ class BashExecutor:
         return os.read(self.fd, self.__max_read_bytes)
 
     def close(self) -> None:
+        logger.info("Close pid/fd: %s/%s" % (self.pid, self.fd))
         os.close(self.fd)
         os.kill(self.pid, signal.SIGKILL)
         os.waitpid(self.pid, 0)  # omg. kill zombie process
@@ -54,7 +59,7 @@ class BashBuilder:
     def __init__(self, klass: type[BashExecutor], shell_command: str) -> None:
         self.__klass = klass
         self.__shell_command = shell_command.split(" ")
-        logger.debug("Shell command: %s" % self.__shell_command)
+        logger.debug("Create bash with command: %s" % self.__shell_command)
 
     def build(self, rows: int, cols: int) -> BashExecutor:
         instance = self.__klass()
