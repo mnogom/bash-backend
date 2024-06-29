@@ -110,6 +110,13 @@ RUN echo "alias bash=''" >> ~/.bashrc && \
     echo "alias else=''" >> ~/.bashrc && \
     echo "alias fi=''" >> ~/.bashrc && \
     echo "alias eval=''" >> ~/.bashrc && \
+    echo "alias exec=''" >> ~/.bashrc && \
+    echo "alias return=''" >> ~/.bashrc && \
+    echo "alias exit=''" >> ~/.bashrc && \
+    echo "alias break=''" >> ~/.bashrc && \
+    echo "alias continue=''" >> ~/.bashrc && \
+    echo "alias set=''" >> ~/.bashrc && \
+    echo "alias unset=''" >> ~/.bashrc && \
     echo "alias unalias=''" >> ~/.bashrc && \
     echo "alias alias=''" >> ~/.bashrc
 
