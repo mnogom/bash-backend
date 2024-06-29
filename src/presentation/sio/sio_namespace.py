@@ -39,8 +39,8 @@ class SioNamespace(socketio.AsyncNamespace):
         bash.close()
         self.__poller.unregister_fd(bash.fd)
 
-    async def on_pty(self, sid: str, data: str) -> None:
-        self.__bash_repo.get_bash_by_sid(sid).write_fd(data.encode())
+    async def on_pty(self, sid: str, data: bytes) -> None:
+        self.__bash_repo.get_bash_by_sid(sid).write_fd(data)
 
     async def on_resize(self, sid: str, data: dict[str, str]) -> None:
         logger.debug("from %s receive resize message: %s" % (sid, data))
