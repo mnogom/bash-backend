@@ -12,7 +12,7 @@ RUN = docker run \
 build-dev:
 	@echo "=== 🚧 Building dev ==="
 	docker build \
-		--tag mnogom/bash-backend \
+		--tag mnogom/bash-backend:dev \
 		--target development \
 		--progress=plain \
 		.
