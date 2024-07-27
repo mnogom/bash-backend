@@ -66,7 +66,7 @@ WORKDIR /home/$USER_NAME
 ENTRYPOINT ["tini", "--" ]
 CMD ["python", "/app/main.py"]
 
-FROM base as production
+FROM base AS production
 
 # Setup users access to bin
 # src: https://ru.hexlet.io/courses/cli-basics/lessons/permissions/theory_unit
