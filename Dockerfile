@@ -41,7 +41,8 @@ RUN curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/0
     curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/02-CV.md > $USER_HOME/02-CV.md && \
     curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/03-GITHUB-PROJECTS.md > $USER_HOME/03-GITHUB-PROJECTS.md && \
     mkdir $USER_HOME/offtopic && \
-    curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/offtopic/00-START.md > $USER_HOME/offtopic/00-START.md
+    curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/offtopic/00-START.md > $USER_HOME/offtopic/00-START.md && \
+    chown -R $USER_NAME:$USER_NAME $USER_HOME
 
 # Setup app
 COPY poetry.lock pyproject.toml ./
@@ -72,9 +73,9 @@ FROM base AS production
 # src: https://ru.hexlet.io/courses/cli-basics/lessons/permissions/theory_unit
 
 # Access to app
-RUN chown -R :konstantin /app && chmod -R 750 /app && \
+RUN chown -R :$USER_NAME /app && chmod -R 750 /app && \
     # Disable access to python
-    chown :konstantin -R /usr/local && chmod -R 750 /usr/local && \
+    chown :$USER_NAME -R /usr/local && chmod -R 750 /usr/local && \
     # Disable access to sh
     chmod 750 /usr/bin/sh
 
