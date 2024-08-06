@@ -32,11 +32,14 @@ class Poller:
             events = self.__poller.poll(self.__timeout_ms)
             for fd, event in events:
                 if event is select.POLLIN:
-                    output = PollerMessage(
-                        fd=fd,
-                        output=os.read(fd, self.__max_read_bytes),
-                    )
-                    self.queue.put_nowait(output)
+                    try:
+                        output = PollerMessage(
+                            fd=fd,
+                            output=os.read(fd, self.__max_read_bytes),
+                        )
+                        self.queue.put_nowait(output)
+                    except OSError:
+                        continue
 
     def start(self) -> None:
         Thread(target=self.__run_poller, daemon=True).start()

@@ -31,6 +31,8 @@ def get_sio_app(
             message = await poller.queue.get()
             logger.info("[%s]: %r" % (message.fd, message.output[:100]))
             sid = bash_repo.get_sid_by_fd(message.fd)
+            if sid is None:
+                continue
             await sio.emit(
                 event="pty",
                 data=message.output,

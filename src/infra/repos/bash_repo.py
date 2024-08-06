@@ -1,5 +1,5 @@
 from src.service.bash.executor import BashExecutor
-
+from loguru import logger
 
 class BashInMemoryRepo:
     def __init__(self) -> None:
@@ -14,5 +14,8 @@ class BashInMemoryRepo:
     def get_bash_by_sid(self, sid: str) -> BashExecutor:
         return self.__repo[sid]
 
-    def get_sid_by_fd(self, fd: int) -> str:
-        return next(sid for sid, bash in self.__repo.items() if bash.fd == fd)
+    def get_sid_by_fd(self, fd: int) -> str | None:
+        try:
+            return next(sid for sid, bash in self.__repo.items() if bash.fd == fd)
+        except StopIteration:
+            return None

@@ -36,8 +36,8 @@ class SioNamespace(socketio.AsyncNamespace):
     async def on_disconnect(self, sid: str) -> None:
         logger.debug("disconnect %s" % sid)
         bash = self.__bash_repo.pop(sid)
-        bash.close()
         self.__poller.unregister_fd(bash.fd)
+        bash.close()
 
     async def on_pty(self, sid: str, data: bytes) -> None:
         self.__bash_repo.get_bash_by_sid(sid).write_fd(data)
