@@ -92,16 +92,17 @@ RUN apt-get remove -y curl gpg && \
     rm poetry.lock pyproject.toml && \
     pip uninstall poetry
 
-
 COPY ./src ./src
 COPY ./main.py ./
 
 WORKDIR /home/$USER_NAME
 
+# Remove all tmp dirs
+RUN rm -rf /var/tmp /tmp
+
 USER $USER_NAME
 
-RUN rm -rf /var/tmp && \
-    echo "alias bash=''" >> ~/.bashrc && \
+RUN echo "alias bash=''" >> ~/.bashrc && \
     echo "alias while=''" >> ~/.bashrc && \
     echo "alias do=''" >> ~/.bashrc && \
     echo "alias for=''" >> ~/.bashrc && \
