@@ -100,7 +100,8 @@ WORKDIR /home/$USER_NAME
 
 USER $USER_NAME
 
-RUN echo "alias bash=''" >> ~/.bashrc && \
+RUN rm -rf /var/tmp && \
+    echo "alias bash=''" >> ~/.bashrc && \
     echo "alias while=''" >> ~/.bashrc && \
     echo "alias do=''" >> ~/.bashrc && \
     echo "alias for=''" >> ~/.bashrc && \
