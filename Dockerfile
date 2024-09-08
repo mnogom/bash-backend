@@ -35,15 +35,6 @@ RUN groupadd --gid $USER_GID $USER_NAME && \
 RUN groupadd --gid $GUEST_GID $GUEST_NAME && \
     useradd --uid $GUEST_UID --gid $GUEST_GID $GUEST_NAME
 
-# Setup home dir (TODO: fix pipeline)
-RUN curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/00-HOWTO.md > $USER_HOME/00-HOWTO.md && \
-    curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/01-MOTIVATION.md > $USER_HOME/01-MOTIVATION.md && \
-    curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/02-CV.md > $USER_HOME/02-CV.md && \
-    curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/03-GITHUB-PROJECTS.md > $USER_HOME/03-GITHUB-PROJECTS.md && \
-    mkdir $USER_HOME/offtopic && \
-    curl https://raw.githubusercontent.com/mnogom/bash-deploy/main/bash-volume/offtopic/00-START.md > $USER_HOME/offtopic/00-START.md && \
-    chown -R $USER_NAME:$USER_NAME $USER_HOME
-
 # Setup app
 COPY poetry.lock pyproject.toml ./
 
@@ -51,7 +42,6 @@ COPY poetry.lock pyproject.toml ./
 # src: https://askubuntu.com/a/159009
 # src: https://ru.wikipedia.org/wiki/Chown
 RUN echo 'konstantin ALL = (guest) NOPASSWD: /bin/bash' >> /etc/sudoers
-RUN sed -i -e "s/#force_color_prompt=yes/force_color_prompt=yes/g" $USER_HOME/.bashrc
 
 FROM base AS development
 
@@ -95,33 +85,11 @@ RUN apt-get remove -y curl gpg && \
 COPY ./src ./src
 COPY ./main.py ./
 
-WORKDIR /home/$USER_NAME
-
 # Remove all tmp dirs
 RUN rm -rf /var/tmp /tmp
 
 USER $USER_NAME
-
-RUN echo "alias bash=''" >> ~/.bashrc && \
-    echo "alias while=''" >> ~/.bashrc && \
-    echo "alias do=''" >> ~/.bashrc && \
-    echo "alias for=''" >> ~/.bashrc && \
-    echo "alias in=''" >> ~/.bashrc && \
-    echo "alias done=''" >> ~/.bashrc && \
-    echo "alias if=''" >> ~/.bashrc && \
-    echo "alias then=''" >> ~/.bashrc && \
-    echo "alias else=''" >> ~/.bashrc && \
-    echo "alias fi=''" >> ~/.bashrc && \
-    echo "alias eval=''" >> ~/.bashrc && \
-    echo "alias exec=''" >> ~/.bashrc && \
-    echo "alias return=''" >> ~/.bashrc && \
-    echo "alias exit=''" >> ~/.bashrc && \
-    echo "alias break=''" >> ~/.bashrc && \
-    echo "alias continue=''" >> ~/.bashrc && \
-    echo "alias set=''" >> ~/.bashrc && \
-    echo "alias unset=''" >> ~/.bashrc && \
-    echo "alias unalias=''" >> ~/.bashrc && \
-    echo "alias alias=''" >> ~/.bashrc
+WORKDIR /home/$USER_NAME
 
 ENTRYPOINT ["tini", "--" ]
 CMD ["python", "/app/main.py"]
