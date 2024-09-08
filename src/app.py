@@ -5,7 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from src.config import Config
 from src.infra.repos.bash_repo import BashInMemoryRepo
-from src.presentation.api.router import service_router
+from src.presentation.api.service import service_router
 from src.presentation.sio.sio_server import get_sio_app
 from src.service.bash.executor import BashBuilder, BashExecutor
 from src.service.bash.poller import Poller
